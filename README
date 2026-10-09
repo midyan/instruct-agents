@@ -1,0 +1,5 @@
+# instruct-agents
+
+npm library for composable structured agents.
+
+Applications that consume this package live in separate repositories.
