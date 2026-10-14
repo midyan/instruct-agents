@@ -2,6 +2,8 @@
 
 npm library for composable structured agents.
 
+**Published name (GitHub Packages):** `@midyan/instruct-agents` on `npm.pkg.github.com` (private for v0.1). Install and publish details: [docs/github-packages.md](docs/github-packages.md).
+
 ## Scope
 
 **In scope:** the publishable library (`src/`, build tooling, library tests).
