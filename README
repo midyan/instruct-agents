@@ -2,4 +2,8 @@
 
 npm library for composable structured agents.
 
-Applications that consume this package live in separate repositories.
+## Scope
+
+**In scope:** the publishable library (`src/`, build tooling, library tests).
+
+**Out of scope:** `applications/`, harnesses, and automations. Those stay in the old repo and are not copied here. Apps that consume this package live elsewhere.
