@@ -1,4 +1,4 @@
-# @midyan/instruct-agents
+# instruct-agents
 
 npm library for composable structured agents.
 
