@@ -24,9 +24,8 @@ export function computeEffectiveTimeoutMs(
     limits.push(input.defaultTimeoutMs);
   }
 
-  let timeoutMs = limits.length === 0
-    ? DEFAULT_TIMEOUT_MS
-    : Math.min(...limits);
+  let timeoutMs =
+    limits.length === 0 ? DEFAULT_TIMEOUT_MS : Math.min(...limits);
 
   if (input.deadline !== undefined) {
     const remainingMs = input.deadline - now - CLEANUP_MARGIN_MS;

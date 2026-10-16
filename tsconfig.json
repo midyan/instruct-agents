@@ -12,5 +12,10 @@
     "rootDir": ".",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "eslint.config.js",
+    "prettier.config.js"
+  ]
 }
