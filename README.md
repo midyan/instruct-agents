@@ -27,14 +27,14 @@ See [GitHub: Working with the npm registry](https://docs.github.com/en/packages/
 
 ## Local quality checks
 
-PRs targeting `main` or `development` run the CI quality gate (install, typecheck, lint, format check, unit tests, build). Run the same checks locally before opening a PR:
+PRs targeting `main` or `development` run the CI quality gate: typecheck, lint, and format check in parallel, then unit tests and build in parallel. Run the same checks locally before opening a PR:
 
 ```bash
 npm ci
 npm run verify
 ```
 
-`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require the CI check to pass in branch protection so failed gates block merge.
+`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require the **CI / Quality gate** check (or each job) in branch protection so failed gates block merge.
 
 ## Scope
 
