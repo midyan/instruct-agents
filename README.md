@@ -34,7 +34,7 @@ npm ci
 npm run verify
 ```
 
-`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require the **CI / Quality gate** check (or each job) in branch protection so failed gates block merge.
+`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require each CI job in branch protection so failed checks block merge.
 
 ## Scope
 
