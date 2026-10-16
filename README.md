@@ -25,6 +25,17 @@ npm install @midyan/instruct-agents
 
 See [GitHub: Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
+## Local quality checks
+
+PRs targeting `main` or `development` run the CI quality gate (install, typecheck, lint, format check, unit tests, build). Run the same checks locally before opening a PR:
+
+```bash
+npm ci
+npm run verify
+```
+
+`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require the CI check to pass in branch protection so failed gates block merge.
+
 ## Scope
 
 **In scope:** the publishable library (`src/`, build tooling, library tests).
