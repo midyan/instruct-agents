@@ -25,7 +25,7 @@ describe("resolvePackageBin", () => {
   });
 
   it("resolves packages that expose bin as a single string path", () => {
-    expect(resolvePackageBin("json5")).toContain("cli.js");
+    expect(resolvePackageBin("nanoid")).toContain("nanoid.js");
   });
 
   it("throws when the requested bin name is missing", () => {
