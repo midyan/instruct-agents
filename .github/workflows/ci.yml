@@ -75,10 +75,3 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-
-  quality:
-    name: Quality gate
-    needs: [test, build]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "All CI checks passed"
