@@ -21,7 +21,27 @@ npm install @midyan/instruct-agents
 
 ## Publish (maintainers / CI)
 
-`package.json` sets `publishConfig.registry` to GitHub Packages. In GitHub Actions, use `permissions.packages: write` and `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` (or a PAT secret with `write:packages` if required).
+`package.json` sets `publishConfig.registry` to GitHub Packages (`@midyan/instruct-agents`). Publishing is automated by `.github/workflows/publish.yml` when a **GitHub Release is published** (not on bare tags). The workflow runs `npm run verify`, then `npm publish` to `https://npm.pkg.github.com` with `permissions.packages: write` and `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`.
+
+Bump `version` in `package.json` on the branch you release from, then create the Release (tag should match, e.g. `v0.1.0`).
+
+### First private publish (dry-run / manual test)
+
+Before the first real Release, validate the pack contents and (optionally) a manual publish:
+
+1. **Local dry-run** (no registry write):
+
+   ```bash
+   npm ci
+   npm run verify
+   npm pack --dry-run
+   ```
+
+   Confirm the tarball lists only `dist/**`, `LICENSE`, `README.md`, and `package.json`.
+
+2. **Actions dry-run**: run the **Publish** workflow via *Actions → Publish → Run workflow* with **dry_run** checked (default). This installs, verifies, and runs `npm pack --dry-run` only.
+
+3. **First real publish**: create a GitHub Release for the version (or run the workflow with **dry_run** unchecked). Confirm the package appears under the repo’s Packages for `@midyan/instruct-agents`.
 
 See [GitHub: Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
 
