@@ -39,7 +39,7 @@ Before the first real Release, validate the pack contents and (optionally) a man
 
    Confirm the tarball lists only `dist/**`, `LICENSE`, `README.md`, and `package.json`.
 
-2. **Actions dry-run**: run the **Publish** workflow via *Actions → Publish → Run workflow* with **dry_run** checked (default). This installs, verifies, and runs `npm pack --dry-run` only.
+2. **Actions dry-run**: run the **Publish** workflow via _Actions → Publish → Run workflow_ with **dry_run** checked (default). This installs, verifies, and runs `npm pack --dry-run` only.
 
 3. **First real publish**: create a GitHub Release for the version (or run the workflow with **dry_run** unchecked). Confirm the package appears under the repo’s Packages for `@midyan/instruct-agents`.
 
