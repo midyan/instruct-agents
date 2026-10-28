@@ -1,8 +1,8 @@
-# instruct-agents
+# @midyan/instruct-agents
 
-npm library for composable structured agents.
+Define agents that call a coding vendor (Cursor, Claude, or Codex), run a task in a project directory, and return **structured JSON** validated with [Zod](https://zod.dev/).
 
-**Published name:** [`@midyan/instruct-agents`](https://www.npmjs.com/package/@midyan/instruct-agents) on the public npm registry.
+**Requirements:** Node.js 22+, the vendor CLI you use available on `PATH`, and a checkout of the repo you pass as `cwd`.
 
 ## Install
 
@@ -10,42 +10,55 @@ npm library for composable structured agents.
 npm install @midyan/instruct-agents
 ```
 
-## Publish (maintainers / CI)
+## Usage
 
-Publishing is automated like [midyan/skissue](https://github.com/midyan/skissue):
+Import `defineStructuredAgent`, pick a vendor catalog (`Composer` / `Cursor`, `Claude`, or `Codex`), and describe the task with a prompt plus an output schema.
 
-- **`version-and-release.yml`**: after green **CI** on a push to **`development`**, bumps the patch version, commits `[skip ci]`, creates a GitHub Release tag, and runs `npm publish` (uses **`NPM_TOKEN`**).
-- **`publish.yml`**: publishes on **`v*`** tag push or **workflow_dispatch** (retry an existing tag); uses **`NPM_TOKEN`**.
+**Task with no input:**
 
-Configure the repository secret **`NPM_TOKEN`** (granular access token with publish permission for `@midyan/instruct-agents`).
+```ts
+import { z } from "zod";
+import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
 
-### Manual / retry publish
+const ResponseSchema = z.object({
+  summary: z.string(),
+  filesChanged: z.array(z.string()),
+});
 
-Re-run a failed publish: **Actions → Publish to npm → Run workflow** and enter an existing tag (e.g. `v0.1.1`).
+const review = defineStructuredAgent({
+  name: "review",
+  cwd: "/path/to/your/repo",
+  vendor: Composer.vendor,
+  model: Composer.model.composer25,
+  prompt: "Review the working tree and list what changed.",
+  responseSchema: ResponseSchema,
+});
 
-### Local dry-run (no registry write)
-
-```bash
-npm ci
-npm run verify
-npm pack --dry-run
+const result = await review();
+// result is typed from ResponseSchema
 ```
 
-Confirm the tarball lists only `dist/**`, `LICENSE`, `README.md`, and `package.json`.
+**Task with typed input:**
 
-## Local quality checks
+```ts
+import { z } from "zod";
+import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
 
-PRs targeting `main` or `development` run the CI quality gate: typecheck, lint, and format check in parallel, then unit tests and build in parallel. Pushes to `development` also run CI (for release automation). Run the same checks locally before opening a PR:
+const InputSchema = z.object({ ticketId: z.string() });
+const ResponseSchema = z.object({ plan: z.string() });
 
-```bash
-npm ci
-npm run verify
+const plan = defineStructuredAgent({
+  cwd: "/path/to/your/repo",
+  vendor: Composer.vendor,
+  model: Composer.model.composer25,
+  inputSchema: InputSchema,
+  responseSchema: ResponseSchema,
+  prompt: ({ ticketId }) => `Draft an implementation plan for ${ticketId}.`,
+});
+
+const result = await plan({ ticketId: "ENG-42" });
 ```
 
-`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require each CI job in branch protection so failed checks block merge.
+Pass an optional second argument for `timeoutMs`, `trace`, `onLog`, and related runtime settings.
 
-## Scope
-
-**In scope:** the publishable library (`src/`, build tooling, library tests).
-
-**Out of scope:** `applications/`, harnesses, and automations. They are not part of this repository. Apps that consume this package live in separate repositories.
+Exports also include `Codex`, `Claude`, `Composer`, and `Cursor` model catalogs, structured-output errors, and git/worktree helpers for custom pipelines.
