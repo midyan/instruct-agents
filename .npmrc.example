@@ -1,0 +1,2 @@
+# Copy to .npmrc if needed for local installs (CI uses the committed .npmrc).
+legacy-peer-deps=true

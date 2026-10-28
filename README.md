@@ -1,63 +1,64 @@
-# instruct-agents
+# @midyan/instruct-agents
 
-npm library for composable structured agents.
+Define agents that call a coding vendor (Cursor, Claude, or Codex), run a task in a project directory, and return **structured JSON** validated with [Zod](https://zod.dev/).
 
-**Published name (GitHub Packages):** `@midyan/instruct-agents` on `npm.pkg.github.com` (private for v0.1). Registry: `https://npm.pkg.github.com`. We do not publish to npmjs.com.
+**Requirements:** Node.js 22+, the vendor CLI you use available on `PATH`, and a checkout of the repo you pass as `cwd`.
 
-## Install (consumers)
-
-In the **consuming project**, add to `.npmrc`:
-
-```ini
-@midyan:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_PKG_TOKEN}
-```
-
-Use a PAT with `read:packages` (and `repo` if this repository is private). Export `GITHUB_PKG_TOKEN` in your shell or CI — never commit tokens.
+## Install
 
 ```bash
 npm install @midyan/instruct-agents
 ```
 
-## Publish (maintainers / CI)
+## Usage
 
-`package.json` sets `publishConfig.registry` to GitHub Packages (`@midyan/instruct-agents`). Publishing is automated by `.github/workflows/publish.yml` when a **GitHub Release is published** (not on bare tags). The workflow runs `npm run verify`, then `npm publish` to `https://npm.pkg.github.com` with `permissions.packages: write` and `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`.
+Import `defineStructuredAgent`, pick a vendor catalog (`Composer` / `Cursor`, `Claude`, or `Codex`), and describe the task with a prompt plus an output schema.
 
-Bump `version` in `package.json` on the branch you release from, then create the Release (tag should match, e.g. `v0.1.0`).
+**Task with no input:**
 
-### First private publish (dry-run / manual test)
+```ts
+import { z } from "zod";
+import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
 
-Before the first real Release, validate the pack contents and (optionally) a manual publish:
+const ResponseSchema = z.object({
+  summary: z.string(),
+  filesChanged: z.array(z.string()),
+});
 
-1. **Local dry-run** (no registry write):
+const review = defineStructuredAgent({
+  name: "review",
+  cwd: "/path/to/your/repo",
+  vendor: Composer.vendor,
+  model: Composer.model.composer25,
+  prompt: "Review the working tree and list what changed.",
+  responseSchema: ResponseSchema,
+});
 
-   ```bash
-   npm ci
-   npm run verify
-   npm pack --dry-run
-   ```
-
-   Confirm the tarball lists only `dist/**`, `LICENSE`, `README.md`, and `package.json`.
-
-2. **Actions dry-run**: run the **Publish** workflow via _Actions → Publish → Run workflow_ with **dry_run** checked (default). This installs, verifies, and runs `npm pack --dry-run` only.
-
-3. **First real publish**: create a GitHub Release for the version (or run the workflow with **dry_run** unchecked). Confirm the package appears under the repo’s Packages for `@midyan/instruct-agents`.
-
-See [GitHub: Working with the npm registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
-
-## Local quality checks
-
-PRs targeting `main` or `development` run the CI quality gate: typecheck, lint, and format check in parallel, then unit tests and build in parallel. Run the same checks locally before opening a PR:
-
-```bash
-npm ci
-npm run verify
+const result = await review();
+// result is typed from ResponseSchema
 ```
 
-`npm run verify` runs typecheck, lint, format check, unit tests, and build. Require each CI job in branch protection so failed checks block merge.
+**Task with typed input:**
 
-## Scope
+```ts
+import { z } from "zod";
+import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
 
-**In scope:** the publishable library (`src/`, build tooling, library tests).
+const InputSchema = z.object({ ticketId: z.string() });
+const ResponseSchema = z.object({ plan: z.string() });
 
-**Out of scope:** `applications/`, harnesses, and automations. They are not part of this repository. Apps that consume this package live in separate repositories.
+const plan = defineStructuredAgent({
+  cwd: "/path/to/your/repo",
+  vendor: Composer.vendor,
+  model: Composer.model.composer25,
+  inputSchema: InputSchema,
+  responseSchema: ResponseSchema,
+  prompt: ({ ticketId }) => `Draft an implementation plan for ${ticketId}.`,
+});
+
+const result = await plan({ ticketId: "ENG-42" });
+```
+
+Pass an optional second argument for `timeoutMs`, `trace`, `onLog`, and related runtime settings.
+
+Exports also include `Codex`, `Claude`, `Composer`, and `Cursor` model catalogs, structured-output errors, and git/worktree helpers for custom pipelines.

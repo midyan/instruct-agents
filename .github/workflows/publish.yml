@@ -1,51 +1,57 @@
-name: Publish
+name: Publish to npm
 
-# Triggers on GitHub Release publish (not on bare tags).
-# Create a Release in the GitHub UI or via `gh release create v0.1.0`.
+# Publishes the package at the given tag to https://registry.npmjs.org using the
+# repository secret NPM_TOKEN (granular access token with publish permission).
+# Automated releases from version-and-release.yml publish there in the same job
+# (GITHUB_TOKEN tag pushes do not trigger this workflow); this file covers human
+# tag pushes and workflow_dispatch retries.
+
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: Pack only (npm pack --dry-run); do not publish to GitHub Packages
-        type: boolean
-        default: true
+      tag:
+        description: "Existing git tag to publish (e.g. v0.1.1). Use if re-running a failed publish."
+        required: true
+        type: string
 
-permissions:
-  contents: read
-  packages: write
+concurrency:
+  group: npm-publish-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
-    name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
+    # npm + actions/setup-node expect NODE_AUTH_TOKEN; bind it once from repo secrets.
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: 22
+          fetch-depth: 0
+          # workflow_dispatch: github.ref points at the default branch, not the tag — use the input.
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
           cache: npm
-          registry-url: https://npm.pkg.github.com
-          scope: "@midyan"
 
       - name: Install dependencies
         run: npm ci
 
+      # prepublishOnly runs verify; explicit step documents the contract in CI logs.
       - name: Verify
         run: npm run verify
 
-      - name: Dry-run pack
-        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
-        run: npm pack --dry-run
+      - name: Verify npm authentication
+        run: npm whoami --registry=https://registry.npmjs.org
 
-      - name: Publish
-        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
-        run: npm publish --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to npm
+        run: npm publish --access public --ignore-scripts

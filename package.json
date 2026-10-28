@@ -11,9 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/midyan/instruct-agents.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
