@@ -1,4 +1,4 @@
-# @midyan/instruct-agents
+# @yannunes/instruct-agents
 
 Define agents that call a coding vendor (Cursor, Claude, or Codex), run a task in a project directory, and return **structured JSON** validated with [Zod](https://zod.dev/).
 
@@ -7,7 +7,7 @@ Define agents that call a coding vendor (Cursor, Claude, or Codex), run a task i
 ## Install
 
 ```bash
-npm install @midyan/instruct-agents
+npm install @yannunes/instruct-agents
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ Import `defineStructuredAgent`, pick a vendor catalog (`Composer` / `Cursor`, `C
 
 ```ts
 import { z } from "zod";
-import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
+import { Composer, defineStructuredAgent } from "@yannunes/instruct-agents";
 
 const ResponseSchema = z.object({
   summary: z.string(),
@@ -42,7 +42,7 @@ const result = await review();
 
 ```ts
 import { z } from "zod";
-import { Composer, defineStructuredAgent } from "@midyan/instruct-agents";
+import { Composer, defineStructuredAgent } from "@yannunes/instruct-agents";
 
 const InputSchema = z.object({ ticketId: z.string() });
 const ResponseSchema = z.object({ plan: z.string() });
