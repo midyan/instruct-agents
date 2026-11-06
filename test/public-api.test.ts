@@ -5,10 +5,12 @@ import * as publicApi from "../src/index.js";
 
 const PUBLIC_VALUE_EXPORTS = [
   "defineStructuredAgent",
+  "defineVendor",
   "StructuredOutputError",
   "TurnTimeoutError",
   "OverallRuntimeBudgetExhaustedError",
   "UnsupportedVendorOptionError",
+  "DuplicateVendorError",
   "Composer",
   "Cursor",
   "Codex",
