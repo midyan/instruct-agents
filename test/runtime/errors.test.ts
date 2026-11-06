@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   AgentRuntimeNotImplementedError,
+  DuplicateVendorError,
   OverallRuntimeBudgetExhaustedError,
   StructuredOutputError,
   TurnTimeoutError,
@@ -86,6 +87,14 @@ describe("UnknownVendorError", () => {
     const error = new UnknownVendorError("cursor");
     expect(error.name).toBe("UnknownVendorError");
     expect(error.message).toBe('Unknown vendor "cursor"');
+  });
+});
+
+describe("DuplicateVendorError", () => {
+  it("names the duplicate vendor", () => {
+    const error = new DuplicateVendorError("cursor");
+    expect(error.name).toBe("DuplicateVendorError");
+    expect(error.message).toBe('Vendor "cursor" is already registered');
   });
 });
 

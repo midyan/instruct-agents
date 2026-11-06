@@ -48,6 +48,14 @@ export class UnknownVendorError extends Error {
   }
 }
 
+/** Thrown when `defineVendor` registers an id that is already in the registry. */
+export class DuplicateVendorError extends Error {
+  constructor(vendor: string) {
+    super(`Vendor "${vendor}" is already registered`);
+    this.name = "DuplicateVendorError";
+  }
+}
+
 /** Thrown when a definition uses vendor options the runtime does not support. */
 export class UnsupportedVendorOptionError extends Error {
   constructor(message: string) {
