@@ -44,7 +44,7 @@ describe("resolveVendorProcess", () => {
   it("throws for unknown vendor ids", () => {
     expect(() =>
       resolveVendorProcess({
-        vendor: "unknown" as "cursor",
+        vendor: "unknown",
         model: "m",
         cwd: "/tmp",
         responseSchema: {} as never,
