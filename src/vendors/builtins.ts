@@ -28,6 +28,10 @@ export const Claude = defineVendor({
     opus: "claude-opus-4-20250514",
   },
   resolveProcess: resolveClaudeProcess,
+  capabilities: {
+    reasoningEffort: false,
+    modelContextWindow: false,
+  },
 });
 
 export const Composer = defineVendor({
@@ -38,6 +42,10 @@ export const Composer = defineVendor({
     composer1: "composer-1",
   },
   resolveProcess: resolveCursorProcess,
+  capabilities: {
+    reasoningEffort: false,
+    modelContextWindow: false,
+  },
 });
 
 /** Alias for {@link Composer}; both refer to the Cursor model catalog. */

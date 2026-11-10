@@ -8,13 +8,20 @@ import "./builtins.js";
 
 export { UnknownVendorError } from "../runtime/errors.js";
 export { DuplicateVendorError } from "../runtime/errors.js";
-export { defineVendor, getRegisteredVendor } from "./define-vendor.js";
+export {
+  DEFAULT_VENDOR_CAPABILITIES,
+  defineVendor,
+  getRegisteredVendor,
+  resolveVendorCapabilities,
+} from "./define-vendor.js";
 export type {
   DefineVendorOptions,
   RegisteredVendor,
+  ResolvedVendorCapabilities,
   ResolveVendorProcessFn,
   VendorCapabilities,
   VendorCatalog,
+  VendorDefinition,
 } from "./define-vendor.js";
 export { Claude, Codex, Composer, Cursor } from "./builtins.js";
 export type { ClaudeVendor, CodexVendor, ComposerVendor } from "./builtins.js";

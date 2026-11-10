@@ -2,11 +2,50 @@ import { DuplicateVendorError } from "../runtime/errors.js";
 import type { StructuredAgentDefinitionBase } from "../runtime/types.js";
 import type { ResolvedVendorProcess } from "./types.js";
 
-/** Optional feature flags a vendor may advertise for later validation. */
+/**
+ * Feature flags a vendor may advertise for structured-agent definition validation.
+ *
+ * Omitted flags default to `false` (unsupported). Built-ins set these explicitly:
+ * Codex enables both; Cursor and Claude disable both.
+ */
 export type VendorCapabilities = {
+  /**
+   * Whether `reasoningEffort` may be set on structured-agent definitions.
+   * @default false
+   */
   reasoningEffort?: boolean;
+  /**
+   * Whether `modelContextWindow` may be set on structured-agent definitions.
+   * @default false
+   */
   modelContextWindow?: boolean;
 };
+
+/** Resolved capability flags after applying documented defaults. */
+export type ResolvedVendorCapabilities = {
+  reasoningEffort: boolean;
+  modelContextWindow: boolean;
+};
+
+/** Documented defaults for {@link VendorCapabilities}. */
+export const DEFAULT_VENDOR_CAPABILITIES: ResolvedVendorCapabilities = {
+  reasoningEffort: false,
+  modelContextWindow: false,
+};
+
+/** Applies {@link DEFAULT_VENDOR_CAPABILITIES} to a partial capabilities object. */
+export function resolveVendorCapabilities(
+  capabilities?: VendorCapabilities,
+): ResolvedVendorCapabilities {
+  return {
+    reasoningEffort:
+      capabilities?.reasoningEffort ??
+      DEFAULT_VENDOR_CAPABILITIES.reasoningEffort,
+    modelContextWindow:
+      capabilities?.modelContextWindow ??
+      DEFAULT_VENDOR_CAPABILITIES.modelContextWindow,
+  };
+}
 
 export type ResolveVendorProcessFn = (
   definition: StructuredAgentDefinitionBase<unknown>,
@@ -23,6 +62,12 @@ export type DefineVendorOptions<
   capabilities?: VendorCapabilities;
 };
 
+/** Input shape passed to {@link defineVendor}. */
+export type VendorDefinition<
+  TId extends string = string,
+  TModels extends Record<string, string> = Record<string, string>,
+> = DefineVendorOptions<TId, TModels>;
+
 export type VendorCatalog<
   TId extends string = string,
   TModels extends Record<string, string> = Record<string, string>,
@@ -34,7 +79,7 @@ export type VendorCatalog<
 export type RegisteredVendor = {
   id: string;
   resolveProcess: ResolveVendorProcessFn;
-  capabilities?: VendorCapabilities;
+  capabilities: ResolvedVendorCapabilities;
 };
 
 const vendorRegistry = new Map<string, RegisteredVendor>();
@@ -59,7 +104,7 @@ export function defineVendor<
   vendorRegistry.set(options.id, {
     id: options.id,
     resolveProcess: options.resolveProcess,
-    capabilities: options.capabilities,
+    capabilities: resolveVendorCapabilities(options.capabilities),
   });
 
   return {
