@@ -28,7 +28,9 @@ export type {
   DefineVendorOptions,
   VendorCapabilities,
   VendorCatalog,
+  VendorDefinition,
 } from "../vendors/define-vendor.js";
+export type { ResolvedVendorProcess } from "../vendors/types.js";
 export { assertVendorDefinition } from "./resolve-vendor.js";
 export {
   getProcessRegistryStateForTests,

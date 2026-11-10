@@ -23,7 +23,9 @@ export type {
   DefineVendorOptions,
   VendorCapabilities,
   VendorCatalog,
+  VendorDefinition,
 } from "./vendors/define-vendor.js";
+export type { ResolvedVendorProcess } from "./vendors/types.js";
 
 export { DEFAULT_TIMEOUT_MS } from "./runtime/types.js";
 
