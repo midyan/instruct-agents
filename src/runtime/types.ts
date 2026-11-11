@@ -4,7 +4,8 @@ import type { TranscriptRun } from "./transcript.js";
 
 export type { TranscriptRun };
 
-export type VendorId = "openai" | "anthropic" | "cursor";
+/** Vendor identifier; built-ins use `"openai" | "anthropic" | "cursor"`. */
+export type VendorId = string;
 
 export type ReasoningEffort = "low" | "medium" | "high" | "xhigh";
 

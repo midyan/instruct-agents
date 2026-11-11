@@ -9,6 +9,7 @@ export type {
 export { defineStructuredAgent } from "./structured-agent.js";
 export {
   AgentRuntimeNotImplementedError,
+  DuplicateVendorError,
   OverallRuntimeBudgetExhaustedError,
   StructuredOutputError,
   TurnTimeoutError,
@@ -22,6 +23,14 @@ export type {
 } from "./errors.js";
 export { Codex, Claude, Composer, Cursor } from "./vendors.js";
 export type { CodexVendor, ClaudeVendor, ComposerVendor } from "./vendors.js";
+export { defineVendor } from "../vendors/define-vendor.js";
+export type {
+  DefineVendorOptions,
+  VendorCapabilities,
+  VendorCatalog,
+  VendorDefinition,
+} from "../vendors/define-vendor.js";
+export type { ResolvedVendorProcess } from "../vendors/types.js";
 export { assertVendorDefinition } from "./resolve-vendor.js";
 export {
   getProcessRegistryStateForTests,

@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 export { defineStructuredAgent } from "./runtime/structured-agent.js";
 
 export {
+  DuplicateVendorError,
   OverallRuntimeBudgetExhaustedError,
   StructuredOutputError,
   TurnTimeoutError,
@@ -16,6 +17,15 @@ export type {
 } from "./runtime/errors.js";
 
 export { Codex, Claude, Composer, Cursor } from "./runtime/vendors.js";
+
+export { defineVendor } from "./vendors/define-vendor.js";
+export type {
+  DefineVendorOptions,
+  VendorCapabilities,
+  VendorCatalog,
+  VendorDefinition,
+} from "./vendors/define-vendor.js";
+export type { ResolvedVendorProcess } from "./vendors/types.js";
 
 export { DEFAULT_TIMEOUT_MS } from "./runtime/types.js";
 

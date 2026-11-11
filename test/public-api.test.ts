@@ -5,10 +5,12 @@ import * as publicApi from "../src/index.js";
 
 const PUBLIC_VALUE_EXPORTS = [
   "defineStructuredAgent",
+  "defineVendor",
   "StructuredOutputError",
   "TurnTimeoutError",
   "OverallRuntimeBudgetExhaustedError",
   "UnsupportedVendorOptionError",
+  "DuplicateVendorError",
   "Composer",
   "Cursor",
   "Codex",
@@ -76,5 +78,27 @@ describe("public package surface", () => {
     expect(publicApi.sanitizeTranscriptName("Review Agent")).toBe(
       "review-agent",
     );
+  });
+
+  it("supports defining a custom vendor on the public surface", () => {
+    const catalog = publicApi.defineVendor({
+      id: `public-api-vendor-${Date.now()}`,
+      models: { default: "default-1" },
+      resolveProcess: (definition) => ({
+        command: "public-api-adapter",
+        args: ["--model", definition.model],
+      }),
+    });
+
+    const agent = publicApi.defineStructuredAgent({
+      cwd: process.cwd(),
+      vendor: catalog.vendor,
+      model: catalog.model.default,
+      prompt: "Return JSON only.",
+      responseSchema: z.object({ ok: z.boolean() }),
+    });
+
+    expect(agent.definition.vendor).toBe(catalog.vendor);
+    expect(agent.definition.model).toBe("default-1");
   });
 });
