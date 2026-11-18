@@ -6,7 +6,7 @@ Define agents that call a coding vendor (Cursor, Claude, or Codex), run a task i
 
 **Current version:** 0.2.0 — adds a public `defineVendor` API so consumers can register custom vendors alongside the shipped Cursor, Claude, and Codex catalogs.
 
-**Supply chain:** dependency policy, inventory, and CI audit gates are documented in [`docs/dependency-security.md`](docs/dependency-security.md). Maintainers: `npm run security:audit`.
+**Supply chain:** dependency policy, inventory, CI audit gates, and weekly Dependabot (dev group vs isolated runtime PRs) are documented in [`docs/dependency-security.md`](docs/dependency-security.md). Maintainers: `npm run security:audit`.
 
 ## Install
 
