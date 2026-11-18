@@ -1,0 +1,31 @@
+# OSV-Scanner waivers — keep in sync with audit-ci.jsonc (see docs/dependency-security.md).
+
+[[IgnoredVulns]]
+id = "GHSA-mrhx-c7xc-m3w5"
+effectiveUntil = 2027-02-18
+reason = "Runtime zod DoS advisory; remediation tracked in H11-128 (ACP/zod bump)."
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+effectiveUntil = 2027-01-18
+reason = "Dev-only picomatch ReDoS via vitest/vite; expect Dependabot (H11-126) / routine bump."
+
+[[IgnoredVulns]]
+id = "GHSA-qxg6-89mg-rqv8"
+effectiveUntil = 2027-01-18
+reason = "Dev-only vitest mocker; bump vitest when H11-126 lands."
+
+[[IgnoredVulns]]
+id = "GHSA-xp26-3454-mjgp"
+effectiveUntil = 2027-01-18
+reason = "Dev-only vitest mocker path traversal; bump vitest when H11-126 lands."
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+effectiveUntil = 2027-01-18
+reason = "Dev-only minimatch via typescript-eslint; routine bump."
+
+[[IgnoredVulns]]
+id = "GHSA-8g5g-mxqh-grgj"
+effectiveUntil = 2027-01-18
+reason = "Dev-only vite fs.deny bypass via vitest; routine bump."

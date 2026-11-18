@@ -150,4 +150,8 @@ vite.config.ts.timestamp-*
 .turbo
 
 # Local / draft documentation (not published with the package)
-docs/
+docs/**
+# Tracked supply-chain policy (H11-124); still omitted from the npm tarball via package.json "files"
+!docs/dependency-security.md
+!docs/security/
+!docs/security/**
