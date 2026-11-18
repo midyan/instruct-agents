@@ -1,0 +1,48 @@
+# Dependabot version updates (H11-126)
+# Docs: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+#
+# - package-ecosystem: npm
+# - directory: /  (package.json + package-lock.json at repo root)
+# - schedule: weekly (Monday 09:00 America/Sao_Paulo)
+#
+# Dev patch/minor bumps are grouped into one PR. Runtime packages
+# (zod, @agentclientprotocol/*) are intentionally NOT grouped — one PR each.
+# GitHub Actions are SHA-pinned in workflows (H11-124); no github-actions
+# ecosystem here so Dependabot does not fight those pins.
+
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+      include: scope
+    labels:
+      - "dependencies"
+
+    groups:
+      # Single weekly PR for safe dev-tooling bumps (patch + minor only).
+      # Major dev updates stay ungrouped so breaking toolchain changes get review alone.
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "patch"
+          - "minor"
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "prettier"
+          - "vitest"
+          - "typescript"
+          - "@types/*"
+          - "nanoid"
+
+    # Do NOT group production dependencies — each ACP/zod bump gets its own PR by default.

@@ -1,6 +1,6 @@
 # Dependency security policy
 
-Supply-chain controls for `@yannunes/instruct-agents` (runtime library + CI). Remediating known zod/ACP advisories is tracked separately (H11-128). Dependabot is tracked separately (H11-126).
+Supply-chain controls for `@yannunes/instruct-agents` (runtime library + CI). Remediating known zod/ACP advisories is tracked separately (H11-128).
 
 ## Scope
 
@@ -30,9 +30,29 @@ Expired waivers must be removed or renewed; CI fails once `expiry` / `effectiveU
 ## Update cadence
 
 - **PR gate:** every pull request and every push to `main` runs the full-lockfile audit job.
-- **Routine bumps:** weekly Dependabot (H11-126) for npm and Actions; merge promptly for high/critical.
+- **Routine bumps:** weekly Dependabot for npm (see [Dependabot](#dependabot) below); merge promptly for high/critical.
 - **Baseline refresh:** re-record an audit snapshot under `docs/security/` at least when cutting a release, or when waivers change.
 - **Publish path:** optional production-subgraph check (`npm run security:audit:prod`) runs in CI before we treat the tree as releasable.
+
+## Dependabot
+
+Config: [`.github/dependabot.yml`](../.github/dependabot.yml).
+
+|                  |                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Schedule**     | Weekly, Monday **09:00** `America/Sao_Paulo`                                                                                                        |
+| **Ecosystem**    | `npm` at repo root (`directory: "/"`)                                                                                                               |
+| **Dev group**    | One PR (`dev-dependencies`) for **patch + minor** bumps to eslint, `@eslint/*`, typescript-eslint, prettier, vitest, typescript, `@types/*`, nanoid |
+| **Runtime**      | `zod` and `@agentclientprotocol/*` are **not** in the dev group — Dependabot opens **one PR per package**                                           |
+| **Majors (dev)** | Ungrouped (separate PRs) so toolchain breaks get focused review                                                                                     |
+| **Actions**      | Not managed by Dependabot here — workflows use SHA pins (see version-pinning rules)                                                                 |
+
+### Review rules
+
+1. **Runtime PRs:** read release notes (ACP often pulls large transitive changes); run `npm ci && npm run verify` before merge. Never merge `claude-agent-acp` / nested `zod` bumps without verify.
+2. **Dev group PRs:** confirm CI (including the security audit job) is green; spot-check the package list so no runtime dep slipped in.
+3. If a Dependabot PR fails the audit gate, fix the advisory or add a dated waiver per the severity thresholds above — do not auto-merge.
+4. Activity: GitHub → **Insights → Dependency graph → Dependabot** (first job may take up to ~24h after merge).
 
 ## Version-pinning rules
 
@@ -109,3 +129,4 @@ Snapshot date: **2026-11-18**. Resolved versions come from the committed lockfil
 
 - Audit snapshot: [`docs/security/audit-snapshot-2026-11-18.md`](./security/audit-snapshot-2026-11-18.md)
 - Allowlist: [`audit-ci.jsonc`](../audit-ci.jsonc), [`osv-scanner.toml`](../osv-scanner.toml)
+- Dependabot: [`.github/dependabot.yml`](../.github/dependabot.yml)
