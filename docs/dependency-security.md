@@ -4,21 +4,21 @@ Supply-chain controls for `@yannunes/instruct-agents` (runtime library + CI). Re
 
 ## Scope
 
-| Surface | What it covers | Risk focus |
-| --- | --- | --- |
-| **Runtime** | `dependencies` published to npm and loaded by consumers | Code execution / DoS in consumer apps; malicious or vulnerable transitive runtime deps |
+| Surface      | What it covers                                               | Risk focus                                                                                  |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **Runtime**  | `dependencies` published to npm and loaded by consumers      | Code execution / DoS in consumer apps; malicious or vulnerable transitive runtime deps      |
 | **Dev / CI** | `devDependencies`, GitHub Actions, install lifecycle scripts | Compromised CI (token theft, poisoned artifacts), developer workstation risk, test-tool RCE |
 
 Runtime findings are higher priority than CI-only findings. Dev advisories still gate PRs when they meet severity thresholds below, because CI holds repository and publish credentials.
 
 ## Severity thresholds
 
-| Severity | PR / `main` gate | Waiver |
-| --- | --- | --- |
-| **Critical** | Fail | Allowed only with advisory id, written reason, and **expiry ≤ 14 days** |
-| **High** | Fail | Allowed with advisory id, reason, and **expiry ≤ 90 days** |
-| **Moderate** | Fail | Allowed with advisory id, reason, and **expiry ≤ 90 days** |
-| **Low / info** | Do not fail | Track via Dependabot / periodic review; no waiver file required |
+| Severity       | PR / `main` gate | Waiver                                                                  |
+| -------------- | ---------------- | ----------------------------------------------------------------------- |
+| **Critical**   | Fail             | Allowed only with advisory id, written reason, and **expiry ≤ 14 days** |
+| **High**       | Fail             | Allowed with advisory id, reason, and **expiry ≤ 90 days**              |
+| **Moderate**   | Fail             | Allowed with advisory id, reason, and **expiry ≤ 90 days**              |
+| **Low / info** | Do not fail      | Track via Dependabot / periodic review; no waiver file required         |
 
 Waivers live in:
 
@@ -36,12 +36,12 @@ Expired waivers must be removed or renewed; CI fails once `expiry` / `effectiveU
 
 ## Version-pinning rules
 
-| Target | Rule |
-| --- | --- |
-| **npm direct deps** | Prefer caret ranges in `package.json` as today; **always** commit `package-lock.json`. Installs in CI and release jobs use the lockfile only. |
-| **Nested / transitive** | Do not hand-edit the lockfile except via `npm install` / `npm update` / `npm audit fix` locally; review lockfile diffs in PRs. |
-| **GitHub Actions** | Pin third-party actions to an **immutable full commit SHA**, with a trailing comment naming the tag (e.g. `# v4.4.0`). |
-| **audit-ci CLI** | Pin the exact version invoked by `security:audit` scripts (currently `7.1.0`). |
+| Target                  | Rule                                                                                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **npm direct deps**     | Prefer caret ranges in `package.json` as today; **always** commit `package-lock.json`. Installs in CI and release jobs use the lockfile only. |
+| **Nested / transitive** | Do not hand-edit the lockfile except via `npm install` / `npm update` / `npm audit fix` locally; review lockfile diffs in PRs.                |
+| **GitHub Actions**      | Pin third-party actions to an **immutable full commit SHA**, with a trailing comment naming the tag (e.g. `# v4.4.0`).                        |
+| **audit-ci CLI**        | Pin the exact version invoked by `security:audit` scripts (currently `7.1.0`).                                                                |
 
 ## CI install rules
 
@@ -71,11 +71,11 @@ npm run security:audit:prod   # optional
 
 ## Secrets reachable from CI (threat model)
 
-| Secret / token | Where | Capabilities if stolen |
-| --- | --- | --- |
-| **`GITHUB_TOKEN`** (default) | All workflows (job token) | Scoped by job `permissions:`. PR CI is **`contents: read` only**. `version-and-release.yml` uses **`contents: write`** (commit bump, tag, GitHub Release). |
-| **`NPM_TOKEN`** → `NODE_AUTH_TOKEN` | `publish.yml`, `version-and-release.yml` | Publish / maintain `@yannunes/instruct-agents` on the npm registry. **Never** expose to PR jobs from forks. |
-| **No other repo secrets** | — | No cloud keys, signing keys, or extra PATs are referenced by workflows today. |
+| Secret / token                      | Where                                    | Capabilities if stolen                                                                                                                                     |
+| ----------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`GITHUB_TOKEN`** (default)        | All workflows (job token)                | Scoped by job `permissions:`. PR CI is **`contents: read` only**. `version-and-release.yml` uses **`contents: write`** (commit bump, tag, GitHub Release). |
+| **`NPM_TOKEN`** → `NODE_AUTH_TOKEN` | `publish.yml`, `version-and-release.yml` | Publish / maintain `@yannunes/instruct-agents` on the npm registry. **Never** expose to PR jobs from forks.                                                |
+| **No other repo secrets**           | —                                        | No cloud keys, signing keys, or extra PATs are referenced by workflows today.                                                                              |
 
 Hardening tied to these secrets: SHA-pinned actions, `npm ci --ignore-scripts`, minimal `permissions:`, and audit gates before merge/publish.
 
@@ -85,25 +85,25 @@ Snapshot date: **2026-11-18**. Resolved versions come from the committed lockfil
 
 ### `dependencies` (runtime)
 
-| Package | Purpose |
-| --- | --- |
-| `@agentclientprotocol/sdk` | ACP protocol types/client shared by vendor adapters |
+| Package                                 | Purpose                                                               |
+| --------------------------------------- | --------------------------------------------------------------------- |
+| `@agentclientprotocol/sdk`              | ACP protocol types/client shared by vendor adapters                   |
 | `@agentclientprotocol/claude-agent-acp` | Claude vendor ACP adapter (ships nested ACP SDK + pins its own `zod`) |
-| `@agentclientprotocol/codex-acp` | Codex vendor ACP adapter |
-| `zod` | Public structured-output schemas and runtime validation |
+| `@agentclientprotocol/codex-acp`        | Codex vendor ACP adapter                                              |
+| `zod`                                   | Public structured-output schemas and runtime validation               |
 
 **ACP / zod overlap:** the library depends on `zod` directly (public API) and also pulls `zod` through `@agentclientprotocol/*`. `claude-agent-acp` additionally nests `@agentclientprotocol/sdk@1.5.0` while the root resolves a newer SDK — two ACP SDK copies can coexist. `zod` is currently deduped to a single tree version in the lockfile, but `claude-agent-acp` declares its own `zod` dependency; advisories on `zod` therefore affect both our direct dependency and the ACP subgraph. Remediation of the current zod high advisory is **H11-128** (out of scope here).
 
 ### `devDependencies` (CI / contributors)
 
-| Package | Purpose |
-| --- | --- |
-| `typescript` | Typecheck and `dist/` emit |
-| `@types/node` | Node.js typings |
-| `eslint`, `@eslint/js`, `typescript-eslint` | Lint |
-| `prettier` | Format check / write |
-| `vitest` | Unit tests |
-| `nanoid` | Test helpers / ids in fixtures |
+| Package                                     | Purpose                        |
+| ------------------------------------------- | ------------------------------ |
+| `typescript`                                | Typecheck and `dist/` emit     |
+| `@types/node`                               | Node.js typings                |
+| `eslint`, `@eslint/js`, `typescript-eslint` | Lint                           |
+| `prettier`                                  | Format check / write           |
+| `vitest`                                    | Unit tests                     |
+| `nanoid`                                    | Test helpers / ids in fixtures |
 
 ## Related artifacts
 
