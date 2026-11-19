@@ -1,14 +1,5 @@
 # OSV-Scanner waivers — keep in sync with audit-ci.jsonc (see docs/dependency-security.md).
-
-[[IgnoredVulns]]
-id = "GHSA-mrhx-c7xc-m3w5"
-effectiveUntil = 2027-02-18
-reason = "Runtime zod DoS advisory; remediation tracked in H11-128 (ACP/zod bump)."
-
-[[IgnoredVulns]]
-id = "GHSA-fc5q-39xc-vjpf"
-effectiveUntil = 2027-01-18
-reason = "Dev-only picomatch ReDoS via vitest/vite; expect Dependabot (H11-126) / routine bump."
+# GHSA-mrhx-c7xc-m3w5 (zod) cleared in H11-128.
 
 [[IgnoredVulns]]
 id = "GHSA-qxg6-89mg-rqv8"

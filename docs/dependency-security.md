@@ -101,18 +101,18 @@ Hardening tied to these secrets: SHA-pinned actions, `npm ci --ignore-scripts`, 
 
 ## Baseline inventory (direct dependencies)
 
-Snapshot date: **2026-11-18**. Resolved versions come from the committed lockfile.
+Snapshot date: **2026-11-19** (post H11-128). Resolved versions come from the committed lockfile.
 
 ### `dependencies` (runtime)
 
-| Package                                 | Purpose                                                               |
-| --------------------------------------- | --------------------------------------------------------------------- |
-| `@agentclientprotocol/sdk`              | ACP protocol types/client shared by vendor adapters                   |
-| `@agentclientprotocol/claude-agent-acp` | Claude vendor ACP adapter (ships nested ACP SDK + pins its own `zod`) |
-| `@agentclientprotocol/codex-acp`        | Codex vendor ACP adapter                                              |
-| `zod`                                   | Public structured-output schemas and runtime validation               |
+| Package                                 | Purpose                                                 | Resolved (lockfile) |
+| --------------------------------------- | ------------------------------------------------------- | ------------------- |
+| `@agentclientprotocol/sdk`              | ACP protocol types/client shared by vendor adapters     | `1.9.0`             |
+| `@agentclientprotocol/claude-agent-acp` | Claude vendor ACP adapter                               | `0.93.0`            |
+| `@agentclientprotocol/codex-acp`        | Codex vendor ACP adapter                                | `1.13.1`            |
+| `zod`                                   | Public structured-output schemas and runtime validation | `4.6.7`             |
 
-**ACP / zod overlap:** the library depends on `zod` directly (public API) and also pulls `zod` through `@agentclientprotocol/*`. `claude-agent-acp` additionally nests `@agentclientprotocol/sdk@1.5.0` while the root resolves a newer SDK — two ACP SDK copies can coexist. `zod` is currently deduped to a single tree version in the lockfile, but `claude-agent-acp` declares its own `zod` dependency; advisories on `zod` therefore affect both our direct dependency and the ACP subgraph. Remediation of the current zod high advisory is **H11-128** (out of scope here).
+**ACP / zod overlap:** the library depends on `zod` directly (public API) and also pulls `zod` through `@agentclientprotocol/*`. After H11-128, `npm ls zod` dedupes to a single **`zod@4.6.7`** (≥ 4.6.6, clears [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)). `claude-agent-acp@0.93.0` still uses ACP SDK **1.x** (`1.9.0`, deduped with the direct SDK dep) — we deliberately did **not** jump to `claude-agent-acp@0.94+` / SDK 2.x in this remediation.
 
 ### `devDependencies` (CI / contributors)
 
@@ -127,6 +127,6 @@ Snapshot date: **2026-11-18**. Resolved versions come from the committed lockfil
 
 ## Related artifacts
 
-- Audit snapshot: [`docs/security/audit-snapshot-2026-11-18.md`](./security/audit-snapshot-2026-11-18.md)
+- Audit snapshots: [`docs/security/audit-snapshot-2026-11-19.md`](./security/audit-snapshot-2026-11-19.md) (current), [`docs/security/audit-snapshot-2026-11-18.md`](./security/audit-snapshot-2026-11-18.md) (H11-124 baseline)
 - Allowlist: [`audit-ci.jsonc`](../audit-ci.jsonc), [`osv-scanner.toml`](../osv-scanner.toml)
 - Dependabot: [`.github/dependabot.yml`](../.github/dependabot.yml)

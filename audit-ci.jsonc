@@ -7,20 +7,6 @@
   "report-type": "important",
   "allowlist": [
     {
-      "GHSA-mrhx-c7xc-m3w5": {
-        "active": true,
-        "expiry": "2027-02-18",
-        "notes": "Runtime zod DoS advisory; remediation tracked in H11-128 (ACP/zod bump).",
-      },
-    },
-    {
-      "GHSA-fc5q-39xc-vjpf": {
-        "active": true,
-        "expiry": "2027-01-18",
-        "notes": "Dev-only picomatch ReDoS via vitest/vite; expect Dependabot (H11-126) / routine bump.",
-      },
-    },
-    {
       "GHSA-qxg6-89mg-rqv8": {
         "active": true,
         "expiry": "2027-01-18",
