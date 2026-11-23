@@ -2,6 +2,7 @@ import { defineVendor } from "./define-vendor.js";
 import { resolveClaudeProcess } from "./claude.js";
 import { resolveCodexProcess } from "./codex.js";
 import { resolveCursorProcess } from "./cursor.js";
+import { resolveJevProcess } from "./jev.js";
 
 export const Codex = defineVendor({
   id: "openai",
@@ -48,9 +49,27 @@ export const Composer = defineVendor({
   },
 });
 
+/**
+ * JEV / System One catalog. ACP shim lands in H11-114; until then use
+ * `options.process` overrides in tests.
+ */
+export const Jev = defineVendor({
+  id: "jev",
+  models: {
+    fast: "jev-fast",
+    v1: "jev-v1",
+  },
+  resolveProcess: resolveJevProcess,
+  capabilities: {
+    reasoningEffort: false,
+    modelContextWindow: false,
+  },
+});
+
 /** Alias for {@link Composer}; both refer to the Cursor model catalog. */
 export const Cursor = Composer;
 
 export type CodexVendor = typeof Codex.vendor;
 export type ClaudeVendor = typeof Claude.vendor;
 export type ComposerVendor = typeof Composer.vendor;
+export type JevVendor = typeof Jev.vendor;

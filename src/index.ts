@@ -4,6 +4,7 @@ export { defineStructuredAgent } from "./runtime/structured-agent.js";
 
 export {
   DuplicateVendorError,
+  InvalidAgentDefinitionError,
   OverallRuntimeBudgetExhaustedError,
   StructuredOutputError,
   TurnTimeoutError,
@@ -16,7 +17,9 @@ export type {
   StructuredOutputErrorReason,
 } from "./runtime/errors.js";
 
-export { Codex, Claude, Composer, Cursor } from "./runtime/vendors.js";
+export { Codex, Claude, Composer, Cursor, Jev } from "./runtime/vendors.js";
+export type { JevVendor } from "./runtime/vendors.js";
+export { buildJevResponseSchema } from "./runtime/jev-response-schema.js";
 
 export { defineVendor } from "./vendors/define-vendor.js";
 export type {
@@ -82,8 +85,16 @@ export type {
   AgentQuietTransportLogEvent,
   AgentStartLogEvent,
   ClientInfo,
+  InputJevAgentDefinition,
+  InputJevStructuredAgent,
   InputStructuredAgent,
   InputStructuredAgentDefinition,
+  JevAgentDefinition,
+  JevDecision,
+  JevResponse,
+  JevResponseOptions,
+  NoInputJevAgentDefinition,
+  NoInputJevStructuredAgent,
   NoInputStructuredAgent,
   NoInputStructuredAgentDefinition,
   ProcessOverride,

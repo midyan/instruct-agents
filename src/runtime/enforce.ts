@@ -6,6 +6,7 @@ import {
 } from "./enforce-prompts.js";
 import { StructuredOutputError } from "./errors.js";
 import type { StructuredOutputAttempt } from "./errors.js";
+import type { JevResponseOptions } from "./jev-response-schema.js";
 import { parseStructuredResponse } from "./parse-structured-response.js";
 
 export const DEFAULT_MAX_STRUCTURED_OUTPUT_ATTEMPTS = 3;
@@ -67,6 +68,8 @@ export async function enforceStructuredOutput<T>(options: {
   responseSchema: z.ZodType<T>;
   submitPrompt: SubmitStructuredOutputPrompt;
   maxAttempts?: number;
+  /** When set (JEV), initial/correction prompts also list allowed `next` labels. */
+  responseOptions?: JevResponseOptions;
 }): Promise<T> {
   const maxAttempts =
     options.maxAttempts ?? DEFAULT_MAX_STRUCTURED_OUTPUT_ATTEMPTS;
@@ -74,6 +77,7 @@ export async function enforceStructuredOutput<T>(options: {
   let prompt = buildInitialStructuredPrompt(
     options.originalTask,
     options.responseSchema,
+    options.responseOptions,
   );
 
   for (let attemptIndex = 0; attemptIndex < maxAttempts; attemptIndex += 1) {
@@ -100,6 +104,7 @@ export async function enforceStructuredOutput<T>(options: {
       turn.rawText,
       parsed.failure,
       options.responseSchema,
+      options.responseOptions,
     );
   }
 

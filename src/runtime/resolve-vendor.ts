@@ -5,14 +5,14 @@ import {
 // Ensure built-in vendors are registered before capability lookups.
 import "../vendors/builtins.js";
 import { UnsupportedVendorOptionError } from "./errors.js";
-import type { StructuredAgentDefinition } from "./types.js";
+import type { VendorId } from "./types.js";
+import type { ReasoningEffort } from "./types.js";
 
-export function assertVendorDefinition(
-  definition: Pick<
-    StructuredAgentDefinition,
-    "vendor" | "reasoningEffort" | "modelContextWindow"
-  >,
-): void {
+export function assertVendorDefinition(definition: {
+  vendor: VendorId;
+  reasoningEffort?: ReasoningEffort;
+  modelContextWindow?: number;
+}): void {
   const capabilities =
     getRegisteredVendor(definition.vendor)?.capabilities ??
     DEFAULT_VENDOR_CAPABILITIES;
