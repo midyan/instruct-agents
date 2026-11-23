@@ -16,7 +16,7 @@ npm install @yannunes/instruct-agents
 
 ## Usage
 
-Import `defineStructuredAgent`, pick a vendor catalog (`Composer` / `Cursor`, `Claude`, or `Codex`), and describe the task with a prompt plus an output schema.
+Import `defineStructuredAgent`, pick a vendor catalog (`Composer` / `Cursor`, `Claude`, `Codex`, or `Jev`), and describe the task with a prompt plus an output schema (JEV uses `responseOptions` instead — see below).
 
 **Task with no input:**
 
@@ -65,9 +65,32 @@ const result = await plan({ ticketId: "ENG-42" });
 
 Pass an optional second argument for `timeoutMs`, `trace`, `onLog`, and related runtime settings.
 
+## JEV (System One)
+
+`Jev` is a built-in vendor for TypeSafe System One decisions. Pass `responseOptions` (not `responseSchema`); the runtime builds `{ next, confidence }`.
+
+| Catalog          | Id         |
+| ---------------- | ---------- |
+| `Jev.model.fast` | `jev-fast` |
+| `Jev.model.v1`   | `jev-v1`   |
+
+Set `JEV_API_KEY` (aliases: `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY`). Optional: `JEV_BASE_URL` (defaults to TypeSafe). Full env / reference agent docs: H11-115.
+
+```ts
+import { Jev, defineStructuredAgent } from "@yannunes/instruct-agents";
+
+const decide = defineStructuredAgent({
+  vendor: Jev.vendor,
+  model: Jev.model.v1,
+  cwd: "/path/to/your/repo",
+  responseOptions: ["implement", "review_only", "escalate"] as const,
+  prompt: "Choose the next step for this change.",
+});
+```
+
 ## Custom vendors
 
-Ship your own vendor id, model catalog, and local ACP adapter spawn path with `defineVendor`. Built-in catalogs (`Composer` / `Cursor`, `Claude`, `Codex`) use the same primitive. Register the vendor once at module load, then pass its `vendor` / `model` into `defineStructuredAgent`.
+Ship your own vendor id, model catalog, and local ACP adapter spawn path with `defineVendor`. Built-in catalogs (`Composer` / `Cursor`, `Claude`, `Codex`, `Jev`) use the same primitive. Register the vendor once at module load, then pass its `vendor` / `model` into `defineStructuredAgent`.
 
 ```ts
 import { z } from "zod";
@@ -108,4 +131,4 @@ const result = await review();
 
 `resolveProcess` must return a `{ command, args, env? }` spawn description for a local ACP adapter. Registering the same vendor id twice throws `DuplicateVendorError`. Unknown ids fail at resolve time with `UnknownVendorError`.
 
-Exports also include `Codex`, `Claude`, `Composer`, and `Cursor` model catalogs, `defineVendor` / vendor types, structured-output errors, and git/worktree helpers for custom pipelines.
+Exports also include `Codex`, `Claude`, `Composer`, `Cursor`, and `Jev` model catalogs, `defineVendor` / vendor types, structured-output errors, and git/worktree helpers for custom pipelines.

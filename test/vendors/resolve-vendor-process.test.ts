@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Claude, Codex, Composer } from "../../src/runtime/vendors.js";
+import { Claude, Codex, Composer, Jev } from "../../src/runtime/vendors.js";
 import {
   UnknownVendorError,
   resolveVendorProcess,
@@ -39,6 +39,24 @@ describe("resolveVendorProcess", () => {
     });
 
     expect(resolved.command).toContain("codex-acp");
+  });
+
+  it("resolves JEV definitions through the ACP HTTP shim", () => {
+    const resolved = resolveVendorProcess({
+      vendor: Jev.vendor,
+      model: Jev.model.v1,
+      cwd: "/tmp",
+      responseSchema: {} as never,
+      responseOptions: ["implement", "review_only"] as const,
+    });
+
+    expect(resolved.command).toBe(process.execPath);
+    expect(resolved.args[0]).toContain("jev-acp-shim.mjs");
+    expect(resolved.env?.JEV_MODEL).toBe(Jev.model.v1);
+    expect(JSON.parse(resolved.env?.JEV_SESSION_CONFIG ?? "{}")).toEqual({
+      model: Jev.model.v1,
+      responseOptions: ["implement", "review_only"],
+    });
   });
 
   it("throws for unknown vendor ids", () => {
