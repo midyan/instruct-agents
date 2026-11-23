@@ -25,6 +25,18 @@ describe("buildInitialStructuredPrompt", () => {
       JSON.stringify(getResponseJsonSchema(ResponseSchema), null, 2),
     );
   });
+
+  it("lists allowed next labels when responseOptions are provided", () => {
+    const prompt = buildInitialStructuredPrompt(
+      "Choose next.",
+      ResponseSchema,
+      ["implement", "review_only"] as const,
+    );
+
+    expect(prompt).toContain(
+      'Allowed values for "next": implement | review_only',
+    );
+  });
 });
 
 describe("buildCorrectionPrompt", () => {

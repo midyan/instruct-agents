@@ -3,7 +3,7 @@ import { UnknownVendorError as RuntimeUnknownVendorError } from "../runtime/erro
 import { getRegisteredVendor } from "./define-vendor.js";
 import type { ResolvedVendorProcess } from "./types.js";
 
-// Register built-in vendors (Cursor / Claude / Codex) at module load.
+// Register built-in vendors (Cursor / Claude / Codex / Jev) at module load.
 import "./builtins.js";
 
 export { UnknownVendorError } from "../runtime/errors.js";
@@ -23,8 +23,13 @@ export type {
   VendorCatalog,
   VendorDefinition,
 } from "./define-vendor.js";
-export { Claude, Codex, Composer, Cursor } from "./builtins.js";
-export type { ClaudeVendor, CodexVendor, ComposerVendor } from "./builtins.js";
+export { Claude, Codex, Composer, Cursor, Jev } from "./builtins.js";
+export type {
+  ClaudeVendor,
+  CodexVendor,
+  ComposerVendor,
+  JevVendor,
+} from "./builtins.js";
 
 /** Maps a structured-agent definition to a local ACP adapter subprocess. */
 export function resolveVendorProcess(
@@ -51,6 +56,14 @@ export {
   resolveCursorAgentCommand,
   resolveCursorProcess,
 } from "./cursor.js";
+export {
+  JEV_API_KEY_ENV,
+  JEV_BASE_URL_ENV,
+  JEV_DEFAULT_TIMEOUT_MS,
+  JEV_MODEL_ENV,
+  JEV_SESSION_CONFIG_ENV,
+  resolveJevProcess,
+} from "./jev.js";
 export {
   resolveModuleRelativePath,
   resolvePackageBin,

@@ -6,6 +6,8 @@ import { createAgentRunObservability } from "./run-observability.js";
 import { runAcpSession, type AcpSessionOptions } from "./runner.js";
 import { runAgentProcessWithTimeout } from "./process-timeout.js";
 import { spawnAgentProcess } from "./spawn-agent.js";
+import type { z } from "zod";
+
 import type {
   ClientInfo,
   RunStructuredAgentOptions,
@@ -88,14 +90,18 @@ export async function runStructuredAgent<TIn, TOut>(
         runAcpSession(agentProcess, sessionOptions, (submitPrompt) =>
           enforceStructuredOutput({
             originalTask: taskPrompt,
-            responseSchema: definition.responseSchema,
+            responseSchema: definition.responseSchema as z.ZodType<TOut>,
+            responseOptions:
+              "responseOptions" in definition
+                ? definition.responseOptions
+                : undefined,
             submitPrompt: observability.wrapSubmitPrompt(submitPrompt),
           }),
         ),
     );
 
     await observability.notifySuccess(result);
-    return result;
+    return result as TOut;
   } catch (error) {
     await observability.notifyFailure(error);
     throw error;

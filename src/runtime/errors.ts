@@ -64,6 +64,14 @@ export class UnsupportedVendorOptionError extends Error {
   }
 }
 
+/** Thrown when a definition mixes JEV `responseOptions` with `responseSchema` incorrectly. */
+export class InvalidAgentDefinitionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidAgentDefinitionError";
+  }
+}
+
 /** Thrown when invocation reaches the runtime before ACP integration exists. */
 export class AgentRuntimeNotImplementedError extends Error {
   constructor() {
