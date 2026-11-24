@@ -9,6 +9,8 @@ export default tseslint.config(
       "node_modules/**",
       "test/fixtures/**",
       "**/claude-launcher.mjs",
+      "**/jev-acp-shim.mjs",
+      "**/map-decision.mjs",
     ],
   },
   eslint.configs.recommended,

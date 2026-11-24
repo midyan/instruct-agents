@@ -49,10 +49,7 @@ export const Composer = defineVendor({
   },
 });
 
-/**
- * JEV / System One catalog. ACP shim lands in H11-114; until then use
- * `options.process` overrides in tests.
- */
+/** JEV / TypeSafe System One catalog (in-repo ACP HTTP shim). */
 export const Jev = defineVendor({
   id: "jev",
   models: {

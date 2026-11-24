@@ -57,6 +57,7 @@ export {
   resolveCursorProcess,
 } from "./cursor.js";
 export {
+  buildJevSessionConfig,
   JEV_API_KEY_ENV,
   JEV_BASE_URL_ENV,
   JEV_DEFAULT_TIMEOUT_MS,
@@ -64,6 +65,7 @@ export {
   JEV_SESSION_CONFIG_ENV,
   resolveJevProcess,
 } from "./jev.js";
+export type { JevSessionConfig } from "./jev.js";
 export {
   resolveModuleRelativePath,
   resolvePackageBin,

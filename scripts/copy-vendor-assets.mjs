@@ -3,11 +3,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
-const sourceDir = join(rootDir, "src/vendors/claude");
-const targetDir = join(rootDir, "dist/vendors/claude");
 
-mkdirSync(targetDir, { recursive: true });
-cpSync(
-  join(sourceDir, "claude-launcher.mjs"),
-  join(targetDir, "claude-launcher.mjs"),
-);
+function copyVendorDir(relativeSourceDir, files) {
+  const sourceDir = join(rootDir, relativeSourceDir);
+  const targetDir = join(rootDir, relativeSourceDir.replace(/^src\//, "dist/"));
+  mkdirSync(targetDir, { recursive: true });
+  for (const file of files) {
+    cpSync(join(sourceDir, file), join(targetDir, file));
+  }
+}
+
+copyVendorDir("src/vendors/claude", ["claude-launcher.mjs"]);
+copyVendorDir("src/vendors/jev", ["jev-acp-shim.mjs", "map-decision.mjs"]);
