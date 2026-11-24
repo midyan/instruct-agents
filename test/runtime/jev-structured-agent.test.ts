@@ -112,6 +112,6 @@ describe("defineStructuredAgent (JEV)", () => {
           args: [fixturePath("jev-decision.mjs")],
         },
       }),
-    ).resolves.toEqual({ next: "implement", confidence: 0.73 });
+    ).resolves.toEqual({ next: "implement", confidence: 0.92 });
   });
 });

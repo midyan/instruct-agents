@@ -24,7 +24,7 @@ startAcpAgent({
         sessionUpdate: "agent_message_chunk",
         content: {
           type: "text",
-          text: '{"next":"implement","confidence":0.73}',
+          text: '{"next":"implement","confidence":0.92}',
         },
       },
     });

@@ -65,28 +65,58 @@ const result = await plan({ ticketId: "ENG-42" });
 
 Pass an optional second argument for `timeoutMs`, `trace`, `onLog`, and related runtime settings.
 
-## JEV (System One)
+## System 1 (JEV)
 
-`Jev` is a built-in vendor for TypeSafe System One decisions. Pass `responseOptions` (not `responseSchema`); the runtime builds `{ next, confidence }`.
+Use **JEV** for fast, constrained routing decisions (pick one of N labels + a confidence score). Prefer **Codex / Claude / Cursor** when the agent must edit code, call tools, or return an open-ended Zod schema.
+
+JEV definitions take `responseOptions` instead of `responseSchema`. The runtime always validates:
+
+```ts
+{ next: /* one of responseOptions */, confidence: /* number in [0, 1] */ }
+```
 
 | Catalog          | Id         |
 | ---------------- | ---------- |
 | `Jev.model.fast` | `jev-fast` |
 | `Jev.model.v1`   | `jev-v1`   |
 
-Set `JEV_API_KEY` (aliases: `TYPESAFE_API_KEY`, `OPENROUTER_API_KEY`). Optional: `JEV_BASE_URL` (defaults to TypeSafe). Full env / reference agent docs: H11-115.
+### Environment
+
+| Variable                                  | Required        | Notes                                          |
+| ----------------------------------------- | --------------- | ---------------------------------------------- |
+| `JEV_API_KEY`                             | yes (live runs) | Bearer token for TypeSafe System One           |
+| `TYPESAFE_API_KEY` / `OPENROUTER_API_KEY` | fallback        | Accepted by the shim if `JEV_API_KEY` is unset |
+| `JEV_BASE_URL`                            | no              | Defaults to `https://api.typesafe.ai`          |
+| `JEV_MODEL`                               | set by runtime  | From `definition.model` — do not set manually  |
+
+See [`.env.example`](.env.example) for local names. Unit tests use an ACP **fixture** via `process` override and do not need a live key.
+
+### Reference agent
 
 ```ts
-import { Jev, defineStructuredAgent } from "@yannunes/instruct-agents";
+import { z } from "zod";
+import { defineStructuredAgent, Jev } from "@yannunes/instruct-agents";
 
-const decide = defineStructuredAgent({
+export const routeNextStep = defineStructuredAgent({
+  name: "jev-route-next",
   vendor: Jev.vendor,
-  model: Jev.model.v1,
-  cwd: "/path/to/your/repo",
-  responseOptions: ["implement", "review_only", "escalate"] as const,
-  prompt: "Choose the next step for this change.",
+  model: Jev.model.fast,
+  cwd: process.cwd(),
+  defaultTimeoutMs: 45_000,
+  responseOptions: ["implement", "review_only", "escalate_system2"] as const,
+  inputSchema: z.object({
+    summary: z.string(),
+  }),
+  prompt: (input) =>
+    `Choose the next orchestration step for this task.\n${input.summary}\n` +
+    `Return JSON with next (one of: implement, review_only, escalate_system2) and confidence 0-1.`,
 });
+
+// Live: await routeNextStep({ summary: "..." });
+// Tests / offline: pass { process: { command: "node", args: ["path/to/jev-decision.mjs"] } }
 ```
+
+A checked-in copy lives at [`examples/jev-route-next-step.ts`](examples/jev-route-next-step.ts).
 
 ## Custom vendors
 
